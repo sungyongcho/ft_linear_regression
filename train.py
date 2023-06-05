@@ -37,9 +37,11 @@ def create_model():
     # print(data.head)
     X = np.array(data['km']).reshape(-1, 1)
     y = np.array(data['price']).reshape(-1, 1)
-    model = MyLR(thetas=np.array([[0], [0]]), max_iter=10)
-    model.thetas = model.simple_gradient(X, y, np.array([[0], [0]]))
+    model = MyLR(thetas=np.array([[0], [0]]).astype(
+        'float64'), alpha=1e-3, max_iter=50000, normalize='y')
+
     model.fit_(X, y)
+    print(model.predict_((np.array(float(240000)).reshape(-1, 1))))
 
 
 if __name__ == "__main__":
