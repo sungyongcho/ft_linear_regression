@@ -34,13 +34,11 @@ def load_model(model_file='model'):
         print("Error loading the model. The model file may be corrupted.")
 
 
-model = None
-if check_model():
-    model = MyLR(load_model(), alpha=1e-3, max_iter=50000, normalize='y')
-else:
-    model = MyLR(thetas=np.array([[0], [0]]).astype(
-        'float64'), alpha=1e-3, max_iter=50000, normalize='y')
+model = MyLR(thetas=np.array([[0], [0]]).astype('float64'), alpha=1e-3,
+             max_iter=50000, normalize='y')
 
+if model.check_model() is True:
+    model.load_model()
 
 mileage = input("Enter a mileage: ")
 

@@ -1,3 +1,4 @@
+import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -280,8 +281,34 @@ class MyLinearRegression():
 
         return theta_denorm
 
+    def check_model(self):
+        directory = './'  # Replace with the actual directory path
+        file_exists = False
+        files = os.listdir(directory)
+
+        for file in files:
+            if (file == 'model'):
+                print('A Model file exists.')
+                file_exists = True
+        if file_exists is False:
+            print('A Model file DOES NOT exist.')
+
+        return file_exists
+
     def save_model(self, output_file='model'):
         with open(output_file, 'wb') as f:
             pickle.dump(self.thetas, f)
         print("The model has been saved in: ",
-              output_file, "in same directory")
+              output_file, "in this directory")
+
+    def load_model(self, model_file='model'):
+        try:
+            with open(model_file, 'rb') as f:
+                theta = pickle.load(f)
+            print("The model has been loaded from:", model_file)
+            print("Thetas", theta.flatten())
+            self.thetas = theta
+        except FileNotFoundError:
+            print("Model file not found. Please provide a valid model file.")
+        except pickle.UnpicklingError:
+            print("Error loading the model. The model file may be corrupted.")
