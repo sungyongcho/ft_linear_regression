@@ -81,7 +81,7 @@ class MyLinearRegression():
 
         return gradient
 
-    def fit_(self, x, y):
+    def fit_(self, x, y, init='n'):
         """
         Description:
         Fits the model to the training dataset contained in x and y.
@@ -101,13 +101,15 @@ class MyLinearRegression():
         Raises:
         This function should not raise any Exception.
         """
-        self.thetas = np.array([[0], [0]]).astype('float64')
+        if init == 'y':
+            self.thetas = np.array([[0], [0]]).astype('float64')
         if self.normalize == 'y':
             x_target, y_target = self.normalize_(x, y)
         else:
             x_target = x
             y_target = y
 
+        print(self.thetas)
         m = len(y)  # Number of training examples
         n = x.shape[1]  # Number of features
 
@@ -126,9 +128,11 @@ class MyLinearRegression():
                 print("Gain:", self.gain_(theta_before, self.thetas))
 
         if self.normalize == 'y':
-            print('before normalization', self.thetas.flatten())
+            print('before denormalization', self.thetas.flatten())
+            before = self.thetas
             self.thetas = self.denormalize_theta(self.thetas, x, y)
-            print('after normalization', self.thetas.flatten())
+            print('after denormalization', self.thetas.flatten())
+            return self.thetas, before
         return self.thetas
 
     def gain_(self, theta_before, theta_after):
@@ -268,6 +272,23 @@ class MyLinearRegression():
         y_normalized = self.minmax_(y)
 
         return X_normalized, y_normalized
+
+    def normalize_theta(self, x, y):
+        if self.thetas.size == 0 or x.size == 0 or y.size == 0:
+            return None
+
+        x_mean, x_std = np.mean(x), np.std(x)
+        y_mean, y_std = np.mean(y), np.std(y)
+
+        if x_std == 0:
+            return None
+
+        normalized_theta = self.thetas.copy()
+        normalized_theta[0] = self.thetas[0] - \
+            (self.thetas[1] * y_std / x_std) * x_mean + y_mean
+        normalized_theta[1] = self.thetas[1] * y_std / x_std
+
+        return normalized_theta
 
     def denormalize_theta(self, theta, x, y):
         x_min = np.min(x)

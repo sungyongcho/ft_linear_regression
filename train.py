@@ -40,7 +40,7 @@ def create_model():
     model = MyLR(thetas=np.array([[0], [0]]).astype(
         'float64'), alpha=1e-3, max_iter=50000, normalize='y')
 
-    model.fit_(X, y)
+    model.fit_(X, y, 'y')
     model.save_model()
 
 
