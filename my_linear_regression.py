@@ -165,11 +165,11 @@ class MyLinearRegression():
         y_hat = np.dot(xp, self.thetas)
         return y_hat
 
-    def simple_predict(self, x):
-        new = np.zeros(shape=x.shape)
-        for i, item in enumerate(x):
-            new[i] = self.thetas[0] + self.thetas[1] * item
-        return new
+    # def simple_predict(self, x):
+    #     new = np.zeros(shape=x.shape)
+    #     for i, item in enumerate(x):
+    #         new[i] = self.thetas[0] + self.thetas[1] * item
+    #     return new
 
     def loss_elem_(self, y, y_hat):
         """
@@ -248,12 +248,6 @@ class MyLinearRegression():
 
         return (x - min_x) / (max_x - min_x)
 
-    # def denormalize_minmax_(self, X, x_normalized):
-    #     min_X = np.min(X, axis=0)
-    #     max_X = np.max(X, axis=0)
-    #     denormalized_X = x_normalized * (max_X - min_X) + min_X
-    #     return denormalized_X
-
     def normalize_(self, x, y):
         """
         Normalize the feature matrix x by subtracting the mean and dividing by the standard deviation.
@@ -291,40 +285,3 @@ class MyLinearRegression():
             pickle.dump(self.thetas, f)
         print("The model has been saved in: ",
               output_file, "in same directory")
-
-    def plot_regression(self, x, y, y_hat):
-
-        plt.grid()
-
-        plt.xlabel("Quantity of blue pill (in micrograms)")
-        plt.ylabel("Space driving score")
-
-        plt.plot(x, y_hat, "--X", color="lime",
-                 linewidth=2, label="S$_{predict}$(pills)")
-        plt.plot(x, y, "o", color="cyan", label="S$_{true}$(pills)")
-
-        plt.legend(bbox_to_anchor=(0, 1, 1, 0),
-                   loc="lower left", ncol=2, frameon=False)
-        plt.show()
-
-    def plot_cost(self, x, y):
-        plt.xlabel(r"$\theta_1$")
-        plt.ylabel("cost function J$(\\theta_0, \\theta_1)$")
-        plt.grid()
-
-        npoints = 100
-        thetas_0 = np.linspace(80, 100, 6)
-        thetas_1 = np.linspace(-15, -4, npoints)
-        for t0 in thetas_0:
-            self.thetas[0][0] = t0
-
-            y_cost = [0] * npoints
-            for i, t1 in enumerate(thetas_1):
-                self.thetas[1][0] = t1
-                y_hat = self.predict_(x)
-                y_cost[i] = self.mse_(y, y_hat)
-            plt.plot(thetas_1, y_cost, label=f"J$(\\theta_0={t0}, \\theta_1)$")
-
-        plt.ylim([10, 150])
-        plt.legend(loc="lower right")
-        plt.show()
