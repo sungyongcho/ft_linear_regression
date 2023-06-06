@@ -11,6 +11,13 @@ files = os.listdir(directory)
 # Print the list of files
 
 
+def check_existing_model():
+    for file in files:
+        if (file == 'model'):
+            return True
+    return False
+
+
 def train_again_or_not():
     print("A Model already exists, do you want to train them again?")
     while True:
@@ -25,13 +32,6 @@ def train_again_or_not():
             print("Invalid input. Please enter 'Y' or 'N'.")
 
 
-def check_existing_model():
-    for file in files:
-        if (file == 'model'):
-            return True
-    return False
-
-
 def create_model():
     data = pd.read_csv('data.csv')
     # print(data.head)
@@ -41,13 +41,16 @@ def create_model():
         'float64'), alpha=1e-3, max_iter=50000, normalize='y')
 
     model.fit_(X, y)
-    print(model.predict_((np.array(float(240000)).reshape(-1, 1))))
+    model.save_model()
 
 
 if __name__ == "__main__":
-    create_model()
-    # if (check_existing_model() is True):
-    #     if (train_again_or_not()):
-    #         print('train')
-    #     else:
-    #         print('not train')
+    if (check_existing_model() is False):
+        print(
+            "Model does not exist; a model will be created as 'model' in the same directory.")
+        create_model()
+    else:
+        if train_again_or_not() is True:
+            create_model()
+        else:
+            print("Model not created due to existing model.")

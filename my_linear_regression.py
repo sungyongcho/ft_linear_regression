@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -285,28 +286,11 @@ class MyLinearRegression():
 
         return theta_denorm
 
-    # def denormalize_thetas(self, x):
-    #     """
-    #     Denormalize the theta values by reversing the normalization process.
-    #     Args:
-    #     thetas: numpy.array, a vector of shape (n + 1, 1) containing the learned coefficients.
-    #     x: numpy.array, a matrix of shape m * n (number of training examples, number of features).
-    #     Returns:
-    #     denormalized_thetas: numpy.array, a vector of shape (n + 1, 1) with denormalized theta values.
-    #     None if thetas or x is an empty numpy.array.
-    #     """
-    #     if self.thetas.size == 0 or x.size == 0:
-    #         return None
-
-    #     mean = np.mean(x, axis=0)
-    #     std = np.std(x, axis=0)
-
-    #     denormalized_thetas = np.zeros_like(self.thetas)
-    #     denormalized_thetas[0] = self.thetas[0] - \
-    #         np.sum(self.thetas[1:] * mean / std)
-    #     denormalized_thetas[1:] = self.thetas[1:] / std
-
-    #     return denormalized_thetas
+    def save_model(self, output_file='model'):
+        with open(output_file, 'wb') as f:
+            pickle.dump(self.thetas, f)
+        print("The model has been saved in: ",
+              output_file, "in same directory")
 
     def plot_regression(self, x, y, y_hat):
 
