@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from my_linear_regression import MyLinearRegression as MyLR
-from sklearn.metrics import r2_score
+from other_losses import r2score_
 
 model = MyLR(thetas=np.array([[0], [0]]).astype('float64'), alpha=1e-3, max_iter=1000, normalize='y')
 
@@ -37,7 +37,7 @@ def update(frame):
     normalized, not_normalized = model.fit_(X, y)
     y_pred = model.predict_(X)
     mse = model.mse_(y, y_pred)
-    r2 = r2_score(y, y_pred)
+    r2 = r2score_(y, y_pred)
     model.thetas = not_normalized
     y_line = normalized[1] * x_line + normalized[0]
     line.set_data(x_line, y_line)
