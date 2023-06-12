@@ -1,97 +1,55 @@
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
-from matplotlib import pyplot as plt
 import pandas as pd
-import os
 import numpy as np
 from my_linear_regression import MyLinearRegression as MyLR
+from sklearn.metrics import r2_score
 
-
-def plot(model):
-    # Plotting the data
-    data = pd.read_csv('data.csv')
-    # print(data.head)
-    X = np.array(data['km']).reshape(-1, 1)
-    y = np.array(data['price']).reshape(-1, 1)
-    plt.scatter(X, y, color='blue', label='Data')
-
-    # Predicting the output using the trained model
-    y_pred = model.predict_(X)
-
-    # Plotting the linear regression line
-    plt.plot(X, y_pred, color='red', label='Linear Regression')
-
-    # Calculating the precision (R-squared value)
-    SSR = np.sum((y_pred - np.mean(y))**2)
-    SST = np.sum((y - np.mean(y))**2)
-    R_squared = SSR / SST
-
-    # Displaying the precision (R-squared value)
-    plt.title('Linear Regression')
-    plt.xlabel('Input')
-    plt.ylabel('Output')
-    plt.legend()
-    plt.show()
-
-    print('Precision (R-squared value):', R_squared)
-
-
-model = MyLR(thetas=np.array([[0], [0]]).astype('float64'), alpha=1e-3,
-             max_iter=50000, normalize='y')
-
-
-if model.check_model() is False:
-    print('the model does not exist, so cannot plot')
-
-else:
-    model.load_model()
-    # print('hello')
-    # plot(model)
+model = MyLR(thetas=np.array([[0], [0]]).astype('float64'), alpha=1e-3, max_iter=1000, normalize='y')
 
 data = pd.read_csv('data.csv')
-# print(data.head)
 X = np.array(data['km']).reshape(-1, 1)
 y = np.array(data['price']).reshape(-1, 1)
-# Assuming you have the following variables: X (input features), y (target variable), and model (trained linear regression model)
 
-# Create a figure and axis
 fig, ax = plt.subplots()
-
-# Set up the scatter plot
 scatter = ax.scatter(X, y, color='blue', label='Data')
 
-# Set up the initial line
 x_line = np.array([np.min(X), np.max(X)])
-y_line = model.predict_(np.zeros((2, 1)))  # Use zero theta here
-line, = ax.plot(x_line, y_line, color='red', label='Linear Regression')
-# Initialization function for the animation
+y_line = model.thetas[1] * x_line + model.thetas[0]
+line, = ax.plot([], [], color='red', label='Linear Regression')
 
+text = ax.text(0.3, 0.9, '', transform=ax.transAxes, ha='center')
+
+ax.set_ylim(np.min(y)-1000, np.max(y)+1000)
 
 def init():
-    line.set_data(x_line, y_line)
-    return line,
+    line.set_data([], [])
+    text.set_text('')
+    return line, text
 
-# Update function for the animation
-
+i = 0
 
 def update(frame):
-    # Calculate the predicted values for the current frame
-    model.max_iter = 1
-    model.thetas = model.fit_(X, y)
-    print("theta:", model.thetas)
-    y_pred = model.predict_(X[frame].reshape(-1, 1))
+    global i
+    if i >= 50:
+        # Stop the animation after 50 iterations
+        animation.event_source.stop()
+    normalized, not_normalized = model.fit_(X, y)
+    y_pred = model.predict_(X)
+    mse = model.mse_(y, y_pred)
+    r2 = r2_score(y, y_pred)
+    model.thetas = not_normalized
+    y_line = normalized[1] * x_line + normalized[0]
+    line.set_data(x_line, y_line)
 
-    # Update the line data
-    line.set_data(x_line, y_pred)
 
-    return line,
+    text.set_text(f'MSE: {mse:.2f}, R2 Score: {r2:.2f}\n i: {i*1000}th iteration')
+    i += 1
 
+    return line, text
 
-# Create the animation
-animation = FuncAnimation(fig, update, frames=500,
-                          init_func=init, blit=True)
+animation = FuncAnimation(fig, update, frames=50, init_func=init, blit=True)
 
-# Display the animation
 plt.title('Linear Regression Animation')
 plt.xlabel('Input')
 plt.ylabel('Output')
